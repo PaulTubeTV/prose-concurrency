@@ -7,8 +7,7 @@ public class SimpleThreads {
         System.out.format("%s: %s%n", threadName, message);
     }
 
-    private static class MessageLoop
-        implements Runnable {
+    private static class MessageLoop implements Runnable {
         public void run() {
             String importantInfo[] = {
                 "Mares eat oats",
