@@ -29,12 +29,20 @@ public class Mergesort {
 
         int mid = (left + right) / 2;
 
-        try {
-            Thread leftThread = new Thread(() -> sortConcurrent(arr, left, mid));
-            Thread rightThread = new Thread(() -> sortConcurrent(arr, mid + 1, right));
-        } catch (Exception e) {
-            
-        }
+        Thread leftThread = new Thread(() -> {
+            try {
+                sortConcurrent(arr, left, mid);
+            } catch (InterruptedException e) {
+                System.out.println(e);
+            }
+        });
+        Thread rightThread = new Thread(() -> {
+            try {
+                sortConcurrent(arr, mid + 1, right);
+            } catch (InterruptedException e) {
+                System.out.println(e);
+            }
+        });
 
         leftThread.start();
         rightThread.start();
