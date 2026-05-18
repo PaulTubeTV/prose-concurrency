@@ -50,7 +50,7 @@ public class Mergesort {
         leftThread.join();
         rightThread.join();
 
-        merge(arr, left, mid, right); // merge() bleibt gleich
+        merge(arr, left, mid, right);
     }
 
     private static String preview(int[] arr, int max) {
