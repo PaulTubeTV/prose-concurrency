@@ -1,50 +1,92 @@
-import java.util.Arrays;
 import java.util.Random;
 
 public class Mergesort {
 
-    private static final Random RANDOM = new Random();
+    public static void sort(int[] arr, int left, int right) {
+        if (left >= right) return;
 
-    public static int[] mergesort(int[] a) {
-        if (a == null) return null;
-        if (a.length < 2) return a;
-        return mergesort(a, 0, a.length - 1);
+        int mid = (left + right) / 2;
+        sort(arr, left, mid);
+        sort(arr, mid + 1, right);
+        merge(arr, left, mid, right);
     }
 
-    private static int[] mergesort(int[] a, int left, int right) {
-        if (left == right) return new int[] { a[left] };
-        int mid = (left + right) >>> 1;
-        int[] leftArr = mergesort(a, left, mid);
-        int[] rightArr = mergesort(a, mid + 1, right);
-        return merge(leftArr, rightArr);
+    public static void merge(int[] arr, int left, int mid, int right) {
+        int[] temp = new int[right - left + 1];
+        int i = left, j = mid + 1, k = 0;
+
+        while (i <= mid && j <= right)
+            temp[k++] = arr[i] <= arr[j] ? arr[i++] : arr[j++];
+        while (i <= mid)  temp[k++] = arr[i++];
+        while (j <= right) temp[k++] = arr[j++];
+
+        for (int l = 0; l < temp.length; l++)
+            arr[left + l] = temp[l];
     }
 
-    private static int[] merge(int[] leftArr, int[] rightArr) {
-        int n = leftArr.length + rightArr.length;
-        int[] res = new int[n];
-        int i = 0, j = 0, k = 0;
-        while (i < leftArr.length && j < rightArr.length) {
-            if (leftArr[i] <= rightArr[j]) res[k++] = leftArr[i++];
-            else res[k++] = rightArr[j++];
+    public static void sortConcurrent(int[] arr, int left, int right) throws InterruptedException {
+        if (left >= right) return;
+
+        int mid = (left + right) / 2;
+
+        try {
+            Thread leftThread = new Thread(() -> sortConcurrent(arr, left, mid));
+            Thread rightThread = new Thread(() -> sortConcurrent(arr, mid + 1, right));
+        } catch (Exception e) {
+            
         }
-        while (i < leftArr.length) res[k++] = leftArr[i++];
-        while (j < rightArr.length) res[k++] = rightArr[j++];
-        return res;
+
+        leftThread.start();
+        rightThread.start();
+
+        leftThread.join();
+        rightThread.join();
+
+        merge(arr, left, mid, right); // merge() bleibt gleich
     }
 
-    public static void main(String[] args) {
-        int n = Integer.parseInt(args[0]);
-
-        int[] a = new int[n];
-        for (int i = 0; i < n; i++) a[i] = RANDOM.nextInt(1000);
-
-        System.out.println("Array-Länge: " + n);
-        if (n <= 200) System.out.println("Vorher: " + Arrays.toString(a));
-        else System.out.println("Vorher: (zu lang, zeige nur erste 20) " + Arrays.toString(Arrays.copyOf(a, Math.min(20, n))));
-
-        int[] sorted = mergesort(a);
-
-        if (n <= 200) System.out.println("Nachher: " + Arrays.toString(sorted));
-        else System.out.println("Nachher: (zu lang, zeige nur erste 20) " + Arrays.toString(Arrays.copyOf(sorted, Math.min(20, n))));
+    private static String preview(int[] arr, int max) {
+        int n = Math.min(arr.length, max);
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (int i = 0; i < n; i++) {
+            if (i > 0) sb.append(", ");
+            sb.append(arr[i]);
+        }
+        if (arr.length > max) sb.append(", ...");
+        sb.append("]");
+        return sb.toString();
     }
+
+    public static void main(String[] args) throws InterruptedException {
+        int size = 20;
+        if (args.length > 0) {
+            try {
+                size = Integer.parseInt(args[0]);
+                if (size < 0) {
+                    System.err.println("Negative Größe nicht erlaubt, verwende 20.");
+                    size = 20;
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("Ungültiges Argument, nutze Standardgröße 20.");
+            }
+        }
+
+        int[] arr = new int[Math.max(0, size)];
+        Random rnd = new Random();
+        for (int i = 0; i < arr.length; i++)
+            arr[i] = rnd.nextInt(100); // Werte 0-99
+
+        System.out.println("Unsortiert: " + preview(arr, 20)
+                + (arr.length > 20 ? " (zeige 20 von " + arr.length + ")" : ""));
+
+        if (arr.length > 0) {
+            sortConcurrent(arr, 0, arr.length - 1);
+        }
+
+        System.out.println("Sortiert:   " + preview(arr, 20)
+                + (arr.length > 20 ? " (zeige 20 von " + arr.length + ")" : ""));
+    }
+
+    
 }
