@@ -16,13 +16,7 @@ public class Konto{
     }
 
     public void auszahlen(int betrag){
-        if(auslesen() < betrag) System.out.println("Nicht genug geld auf dem Konto");
-        else verlauf.addFirst(betrag);
-    }
-
-    public void ausgeben(){
-        for (int i : verlauf) {
-            System.out.println(i);
-        }
+        if(auslesen() < betrag) System.out.println("Nicht genug Geld auf dem Konto");
+        else verlauf.addFirst(betrag * (-1));
     }
 }
