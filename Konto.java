@@ -1,22 +1,17 @@
-import java.util.ArrayList;
 
 public class Konto{
-    ArrayList<Integer> verlauf = new ArrayList<>();
+    int kontostand = 0;
 
     public int auslesen() {
-        int res = 0;
-        for (int i : verlauf) {
-            res += i;
-        }
-        return res;
+        return kontostand;
     }
 
     public void einzahlen(int betrag){
-        verlauf.addFirst(betrag);
+        kontostand += betrag;
     }
 
     public void auszahlen(int betrag){
         if(auslesen() < betrag) System.out.println("Nicht genug Geld auf dem Konto");
-        else verlauf.addFirst(betrag * (-1));
+        else kontostand -= betrag;
     }
 }
