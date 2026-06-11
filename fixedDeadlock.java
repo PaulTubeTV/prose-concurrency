@@ -3,12 +3,28 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class fixedDeadlock
 {
+    static void main(String[] args)
+    {
+        Konto Henrik = new Konto(1000, "Henrik");
+        Konto Paul = new Konto(1000, "Paul");
+        new Thread(new Runnable() {
+            public void run() {
+                Henrik.send(Paul, 100);
+            }
+        }).start();
+        new Thread(new Runnable() {
+            public void run() {
+                Paul.send(Henrik, 50);
+            }
+        }).start();
+    }
+
     static class Konto
     {
-        private Lock lock = new ReentrantLock();
+        private final Lock lock = new ReentrantLock();
         private double Kontostand = 100;
-        private String name;
-        
+        private final String name;
+
         public Konto(int startKontostand, String name)
         {
             this.Kontostand = startKontostand;
@@ -24,7 +40,7 @@ public class fixedDeadlock
         {
             return name;
         }
-        
+
         public boolean trySend(Konto empfaenger, double betrag)
         {
             Boolean sendLock = false;
@@ -42,11 +58,11 @@ public class fixedDeadlock
                     {
                         lock.unlock();
                     }
-                    if(receiveLock) 
+                    if (receiveLock)
                     {
                         empfaenger.lock.unlock();
                     }
-                }  
+                }
             }
             return sendLock && receiveLock;
 
@@ -66,7 +82,7 @@ public class fixedDeadlock
                 {
                     lock.unlock();
                     empfaenger.lock.unlock();
-                } 
+                }
             }
             else
             {
@@ -80,7 +96,7 @@ public class fixedDeadlock
                 {
                     send(empfaenger, betrag);
                 }
-            }  
+            }
         }
 
         public void receive(double betrag)
@@ -88,20 +104,6 @@ public class fixedDeadlock
             System.out.println("Empfange " + betrag + " bei " + this.getName());
             this.Kontostand += betrag;
         }
-           
-    }
-    
-    public static void main(String[] args)
-    {
-        Konto Henrik = new Konto(1000, "Henrik");
-        Konto Paul = new Konto(1000, "Paul");
-        new Thread(new Runnable() 
-            {
-                public void run() { Henrik.send(Paul, 100); }
-            }).start();
-        new Thread(new Runnable() 
-            {
-                public void run() { Paul.send(Henrik, 50); }
-            }).start();
+
     }
 }
