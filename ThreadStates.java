@@ -1,38 +1,6 @@
-/**
- * ThreadStates.java
- *
- * Demonstriert alle 6 Zustände (Thread.State) eines Java-Threads:
- *
- *   NEW            → Thread erstellt, start() noch nicht aufgerufen
- *   RUNNABLE       → Thread läuft oder wartet auf CPU-Zeit
- *   BLOCKED        → Thread wartet darauf, einen synchronized-Block zu betreten
- *   WAITING        → Thread wartet unbegrenzt (wait(), join() ohne Timeout)
- *   TIMED_WAITING  → Thread wartet begrenzt (sleep(ms), join(ms), wait(ms))
- *   TERMINATED     → run() ist abgeschlossen
- *
- * Zustandsübergänge (vereinfacht):
- *
- *   new Thread()
- *       │
- *       ▼
- *     [NEW]
- *       │  start()
- *       ▼
- *   [RUNNABLE] ◄────────────────────────────────────────────────────┐
- *       │                                                           │
- *       ├── synchronized-Block belegt ──► [BLOCKED]  ── frei ─────►┤
- *       │                                                           │
- *       ├── wait() / join() ────────────► [WAITING]  ── notify() ──►┤
- *       │                                                           │
- *       ├── sleep(ms) / join(ms) / wait(ms) ► [TIMED_WAITING] ─────►┤
- *       │                                  (Timeout oder notify())  │
- *       │                                                           │
- *       └── run() abgeschlossen ─────────► [TERMINATED]
- */
 public class ThreadStates {
 
     public static void main(String[] args) throws InterruptedException {
-        System.out.println("=== Thread-States Demonstration ===\n");
 
         // ── NEW ──────────────────────────────────────────────────────
         Thread thread = new Thread(() -> {
@@ -94,7 +62,5 @@ public class ThreadStates {
         wartenThread.join();
         halterThread.join();
         blockedThread.join();
-
-        System.out.println("\n=== Thread-States abgeschlossen ===");
     }
 }

@@ -13,15 +13,10 @@
 public class ThreadInterrupt {
 
     public static void main(String[] args) throws InterruptedException {
-        System.out.println("=== ThreadInterrupt Demonstration ===\n");
-
-        // ─────────────────────────────────────────────────────────────
-        // Szenario A: Schlafender Thread wird durch interrupt() geweckt
-        // ─────────────────────────────────────────────────────────────
         Thread schlafer = new Thread(() -> {
             try {
                 System.out.println("  [Schläfer] Schlafe 10 Sekunden ...");
-                Thread.sleep(10_000);
+                Thread.sleep(10000);
                 System.out.println("  [Schläfer] Ausgeschlafen."); // Wird nicht erreicht
             } catch (InterruptedException e) {
                 System.out.println("  [Schläfer] Durch interrupt() geweckt! Thread beendet sich.");
@@ -38,9 +33,6 @@ public class ThreadInterrupt {
         schlafer.join();
         System.out.println("  Zustand nach interrupt() + join(): " + schlafer.getState()); // TERMINATED
 
-        // ─────────────────────────────────────────────────────────────
-        // Szenario B: Aktiv laufender Thread prüft das Interrupt-Flag selbst
-        // ─────────────────────────────────────────────────────────────
         Thread aktiver = new Thread(() -> {
             System.out.println("  [Aktiver] Starte Schleife ...");
             int i = 0;
@@ -58,7 +50,5 @@ public class ThreadInterrupt {
         aktiver.interrupt();
         aktiver.join();
         System.out.println("  Zustand: " + aktiver.getState()); // TERMINATED
-
-        System.out.println("\n=== ThreadInterrupt abgeschlossen ===");
     }
 }
