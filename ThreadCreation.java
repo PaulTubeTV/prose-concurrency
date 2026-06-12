@@ -14,6 +14,9 @@ public class ThreadCreation {
         t1.join(); // Warten bis t1 fertig ist
         System.out.println("3) Zustand nach join():         " + t1.getState()); // TERMINATED
 
+        System.out.println("3b) Kurz sleep im main-Thread...");
+        Thread.sleep(2000);
+        System.out.println("    ...weiter nach sleep");
 
         Thread benannt   = new Thread(() -> {}, "Mein-Thread");
         Thread unbenannt = new Thread(() -> {});
