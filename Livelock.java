@@ -3,12 +3,28 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class Livelock
 {
+    static void main(String[] args)
+    {
+        Konto Henrik = new Konto(1000, "Henrik");
+        Konto Paul = new Konto(1000, "Paul");
+        new Thread(new Runnable() {
+            public void run() {
+                Henrik.send(Paul, 100);
+            }
+        }).start();
+        new Thread(new Runnable() {
+            public void run() {
+                Paul.send(Henrik, 50);
+            }
+        }).start();
+    }
+
     static class Konto
     {
-        private Lock lock = new ReentrantLock();
+        private final Lock lock = new ReentrantLock();
         private double Kontostand = 100;
-        private String name;
-        
+        private final String name;
+
         public Konto(int startKontostand, String name)
         {
             this.Kontostand = startKontostand;
@@ -24,7 +40,7 @@ public class Livelock
         {
             return name;
         }
-        
+
         public boolean trySend(Konto empfaenger, double betrag)
         {
             Boolean sendLock = false;
@@ -42,11 +58,11 @@ public class Livelock
                     {
                         lock.unlock();
                     }
-                    if(receiveLock) 
+                    if (receiveLock)
                     {
                         empfaenger.lock.unlock();
                     }
-                }  
+                }
             }
             return sendLock && receiveLock;
 
@@ -66,13 +82,17 @@ public class Livelock
                 {
                     lock.unlock();
                     empfaenger.lock.unlock();
-                } 
+                }
             }
             else
             {
                 System.out.println(this.getName() + " sendet an " + empfaenger.getName() + " aber " + empfaenger.getName() + " sendet gerade an " + this.getName());
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                }
                 send(empfaenger, betrag);
-            }  
+            }
         }
 
         public void receive(double betrag)
@@ -80,20 +100,6 @@ public class Livelock
             System.out.println("Empfange " + betrag + " bei " + this.getName());
             this.Kontostand += betrag;
         }
-           
-    }
 
-    public static void main(String[] args)
-    {
-        Konto Henrik = new Konto(1000, "Henrik");
-        Konto Paul = new Konto(1000, "Paul");
-        new Thread(new Runnable() 
-            {
-                public void run() { Henrik.send(Paul, 100); }
-            }).start();
-        new Thread(new Runnable() 
-            {
-                public void run() { Paul.send(Henrik, 50); }
-            }).start();
     }
 }
